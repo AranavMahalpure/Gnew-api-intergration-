@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Articles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .article {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .article h2 {
+            margin-top: 0;
+        }
+        .article p {
+            margin-bottom: 10px;
+        }
+        .article img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>News Articles</h1>
+        <div id="news"></div>
+    </div>
+<script>
+    async function fetchNewsData() {
+        const apiKey = 'ea1b3162ceb2afb80e14a64088bb25e0';
+        const url = `https://gnews.io/api/v4/search?q=energy&token=${apiKey}&lang=en&country=us`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.articles;
+        } catch (error) {
+            console.error('Error fetching news data:', error);
+            return [];
+        }
+    }
+
+    async function displayNewsData() {
+        const newsContainer = document.getElementById('news');
+
+        try {
+            const articles = await fetchNewsData();
+
+            articles.forEach(article => {
+                const articleDiv = document.createElement('div');
+                articleDiv.classList.add('article');
+
+                const title = document.createElement('h2');
+                title.textContent = article.title;
+
+                const source = document.createElement('p');
+                source.textContent = `Source: ${article.source.name}`;
+
+                const publishedAt = document.createElement('p');
+                publishedAt.textContent = `Published at: ${new Date(article.publishedAt).toLocaleString()}`;
+
+                const description = document.createElement('p');
+                description.textContent = article.description;
+
+                const image = document.createElement('img');
+                image.src = article.image;
+                image.alt = article.title;
+
+                const readMoreLink = document.createElement('a');
+                readMoreLink.textContent = 'Read More';
+                readMoreLink.href = article.url;
+                readMoreLink.target = '_blank';
+
+                articleDiv.appendChild(title);
+                articleDiv.appendChild(source);
+                articleDiv.appendChild(publishedAt);
+                articleDiv.appendChild(description);
+                articleDiv.appendChild(image);
+                articleDiv.appendChild(readMoreLink);
+
+                newsContainer.appendChild(articleDiv);
+            });
+        } catch (error) {
+            console.error('Error displaying news data:', error);
+        }
+    }
+    window.onload = displayNewsData;
+</script>
+</body>
+</html>
